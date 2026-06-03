@@ -1,0 +1,15 @@
+# 複製為 application-local.yml 並填入真實金鑰（application-local.yml 已被 .gitignore 排除）
+app:
+  jwt:
+    secret: "use-a-long-random-secret-at-least-32-bytes"
+  ecpay:
+    merchant-id: "2000132"        # 綠界測試特店編號
+    hash-key: "5294y06JbISpM5x9"
+    hash-iv: "v77hoKGq4kWxNNIS"
+  line:
+    channel-id: ""
+    channel-secret: ""
+    messaging-access-token: ""
+  google:
+    client-id: ""
+    client-secret: ""

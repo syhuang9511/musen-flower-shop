@@ -1,0 +1,87 @@
+:root {
+  --color-primary: #4a5d4e;        /* 主色：低彩度松綠 */
+  --color-primary-dark: #2b352c;   /* 深墨綠（Header / 漸層） */
+  --color-accent: #9caf94;         /* 點綴：霧面鼠尾草綠 */
+  --color-bg: #f4f3ee;             /* 背景：暖灰白 */
+  --color-surface: #fbfaf6;        /* 卡片表面 */
+  --color-text: #2d332d;
+  --color-muted: #8b8f86;
+  --color-line: #e6e4dc;          /* 細邊框 */
+  --radius: 10px;
+  --shadow: 0 6px 24px rgba(43, 53, 44, 0.07);
+  font-family: 'Noto Sans TC', 'Helvetica Neue', Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: #fff;
+  transition: opacity 0.2s;
+}
+.btn:hover {
+  opacity: 0.88;
+}
+.btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.notice {
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius);
+  background: #fff4e6;
+  border: 1px solid #f0c987;
+  color: #8a5a00;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ---- 全域 RWD ---- */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 0.55rem 1rem;
+  }
+}

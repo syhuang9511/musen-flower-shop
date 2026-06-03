@@ -1,0 +1,28 @@
+# ---- Node / Frontend ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env.local
+.env.*.local
+frontend/.vite/
+
+# ---- Java / Backend ----
+target/
+*.class
+*.jar
+!**/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
+backend/src/main/resources/application-local.yml
+hs_err_pid*
+
+# ---- IDE ----
+.idea/
+*.iml
+.vscode/
+*.swp
+.DS_Store
+
+# ---- Logs ----
+*.log
+logs/

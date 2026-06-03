@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: floralshop-db
+    environment:
+      POSTGRES_DB: floralshop
+      POSTGRES_USER: floral
+      POSTGRES_PASSWORD: floral
+    ports:
+      - "5432:5432"
+    volumes:
+      - floral_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U floral -d floralshop"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    container_name: floralshop-adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  floral_pgdata:
