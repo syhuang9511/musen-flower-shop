@@ -7,9 +7,10 @@ spring:
   profiles:
     active: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/floralshop
+    url: jdbc:mysql://localhost:3306/floralshop?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
     username: floral
     password: floral
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: validate          # schema 由 Flyway 管理

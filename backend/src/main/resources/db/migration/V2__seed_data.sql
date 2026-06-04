@@ -20,9 +20,9 @@ INSERT INTO products (name, description, price, image, stock, logistics_class, f
 -- 示範優惠券
 INSERT INTO coupons (code, name, type, value, min_spend, total_quantity, per_user_limit, valid_until)
 VALUES
-('WELCOME100', '新會員滿千折百', 'FIXED',      100, 1000, 1000, 1, now() + INTERVAL '90 days'),
-('SPRING15',   '春季 85 折',     'PERCENTAGE',  15,  800,  500, 1, now() + INTERVAL '30 days'),
-('FREESHIP',   '免運券',         'FREE_SHIPPING', 0,  0,  200, 2, now() + INTERVAL '60 days');
+('WELCOME100', '新會員滿千折百', 'FIXED',      100, 1000, 1000, 1, NOW() + INTERVAL 90 DAY),
+('SPRING15',   '春季 85 折',     'PERCENTAGE',  15,  800,  500, 1, NOW() + INTERVAL 30 DAY),
+('FREESHIP',   '免運券',         'FREE_SHIPPING', 0,  0,  200, 2, NOW() + INTERVAL 60 DAY);
 
 -- Q&A 分類與內容
 INSERT INTO qa_categories (id, name, sort_order) VALUES
@@ -31,6 +31,6 @@ INSERT INTO qa_categories (id, name, sort_order) VALUES
 (3, '鮮花花束', 3);
 
 INSERT INTO qa_articles (category_id, question, answer, published_at) VALUES
-(1, '多肉多久澆一次水？', '一般 7-10 天澆一次，待介質完全乾透再給水，避免積水爛根。', now()),
-(2, '龜背芋葉子發黃怎麼辦？', '多為澆水過多或日照不足，建議移至明亮散射光處並調整澆水頻率。', now()),
-(3, '收到鮮花後如何延長壽命？', '斜剪花腳 2-3 公分，每 1-2 天換水並修剪，避免陽光直射與電器熱源。', now());
+(1, '多肉多久澆一次水？', '一般 7-10 天澆一次，待介質完全乾透再給水，避免積水爛根。', NOW()),
+(2, '龜背芋葉子發黃怎麼辦？', '多為澆水過多或日照不足，建議移至明亮散射光處並調整澆水頻率。', NOW()),
+(3, '收到鮮花後如何延長壽命？', '斜剪花腳 2-3 公分，每 1-2 天換水並修剪，避免陽光直射與電器熱源。', NOW());

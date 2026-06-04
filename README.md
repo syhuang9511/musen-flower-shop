@@ -53,7 +53,7 @@
 | --- | --- |
 | 前端 | Vue 3 (Composition API) · Vite 6 · Vue Router · Pinia · Axios |
 | 後端 | Java 17 · Spring Boot 3 · Spring Security · Spring Data JPA |
-| 資料庫 | PostgreSQL 16（Flyway 版本控管） |
+| 資料庫 | MySQL 8（Flyway 版本控管） |
 | 金流 | 綠界科技 ECPay |
 | 第三方 | Google OAuth · LINE Login & Messaging API · EmailJS |
 | CI | GitHub Actions（push 自動 build 前端） |
@@ -91,12 +91,13 @@ npm install
 npm run dev                     # http://localhost:5173
 ```
 
-### 後端（需 JDK 17+）
+### 後端（需 JDK 17+、Maven、MySQL 8）
 ```bash
-docker compose up -d            # 啟動 PostgreSQL（可選）
+docker compose up -d            # 啟動 MySQL（可選，會自動建立 floralshop 資料庫與 floral 帳號）
 cd backend
-./mvnw spring-boot:run          # http://localhost:8081
+mvn spring-boot:run             # http://localhost:8081
 ```
+> 未使用 Docker 時，請先在 MySQL 建立資料庫與帳號（見下方說明），Flyway 會在啟動時自動建表與灌入種子資料。
 
 ---
 
