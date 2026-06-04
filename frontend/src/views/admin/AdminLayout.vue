@@ -14,169 +14,193 @@ function logout() {
 </script>
 
 <template>
-  <div class="container admin">
-    <!-- 手機頂列：後台標題 + 漢堡（展開為後台選單） -->
-    <div class="admin__topbar">
-      <strong>後台管理</strong>
-      <button
-        class="admin__toggle"
-        :class="{ open: menuOpen }"
-        :aria-expanded="menuOpen"
-        aria-label="後台選單"
-        @click="menuOpen = !menuOpen"
-      >
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-
-    <aside :class="{ 'is-open': menuOpen }" @click="menuOpen = false">
-      <div class="admin__user">
-        <span class="admin__avatar">{{ (admin.current?.name || 'A').charAt(0) }}</span>
-        <div>
-          <strong>{{ admin.current?.name }}</strong>
-          <small>{{ admin.current?.username }}</small>
+  <div class="admin">
+    <!-- 後台頂部導覽列 -->
+    <header class="admin-header">
+      <div class="container admin-header__inner">
+        <div class="admin-header__brand">
+          <span class="avatar">{{ (admin.current?.name || 'A').charAt(0) }}</span>
+          <div class="brand-text">
+            <strong>後台管理</strong>
+            <small>{{ admin.current?.name }}（{{ admin.current?.username }}）</small>
+          </div>
         </div>
-      </div>
-      <h2 class="admin__title">後台管理</h2>
-      <nav>
-        <RouterLink to="/admin">營運儀表板</RouterLink>
-        <RouterLink to="/admin/orders">訂單管理</RouterLink>
-        <RouterLink to="/admin/products">商品管理</RouterLink>
-        <RouterLink to="/admin/cms">Q&A 管理</RouterLink>
-        <RouterLink to="/admin/comments">留言管理</RouterLink>
-        <RouterLink to="/admin/coupons">優惠券管理</RouterLink>
-        <RouterLink to="/admin/members">會員管理</RouterLink>
-        <RouterLink to="/admin/analytics">購物車分析</RouterLink>
-      </nav>
-      <button class="logout" @click="logout">登出</button>
-    </aside>
 
-    <section><RouterView /></section>
+        <button
+          class="admin-toggle"
+          :class="{ open: menuOpen }"
+          :aria-expanded="menuOpen"
+          aria-label="後台選單"
+          @click="menuOpen = !menuOpen"
+        >
+          <span></span><span></span><span></span>
+        </button>
+
+        <nav class="admin-nav" :class="{ 'is-open': menuOpen }" @click="menuOpen = false">
+          <RouterLink to="/admin">營運儀表板</RouterLink>
+          <RouterLink to="/admin/orders">訂單管理</RouterLink>
+          <RouterLink to="/admin/products">商品管理</RouterLink>
+          <RouterLink to="/admin/cms">Q&A 管理</RouterLink>
+          <RouterLink to="/admin/comments">留言管理</RouterLink>
+          <RouterLink to="/admin/coupons">優惠券管理</RouterLink>
+          <RouterLink to="/admin/members">會員管理</RouterLink>
+          <RouterLink to="/admin/analytics">購物車分析</RouterLink>
+          <button class="logout" @click="logout">登出</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container admin-main">
+      <RouterView />
+    </main>
   </div>
 </template>
 
 <style scoped>
-.admin {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr); /* minmax(0,..) 防止內容撐爆軌道 */
-  gap: 2rem;
-  padding: 1.5rem 1rem 3rem;
+/* 頂部導覽列 */
+.admin-header {
+  background: var(--color-primary-dark);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.admin-header__inner {
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+  gap: 1rem;
+}
+.admin-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #f3f4ee;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #1f2a1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex: 0 0 auto;
+}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.brand-text small {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.78rem;
 }
 
-/* 手機頂列：桌機隱藏 */
-.admin__topbar {
-  display: none;
-}
-.admin__toggle {
+.admin-nav {
   display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.admin-nav a {
+  color: #d6dcd2;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+.admin-nav a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.admin-nav a.router-link-exact-active {
+  background: var(--color-accent);
+  color: #1f2a1f;
+  font-weight: 600;
+}
+.logout {
+  margin-left: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  color: #d6dcd2;
+  font-size: 0.9rem;
+}
+.logout:hover {
+  color: #fff;
+  border-color: #e0b4ad;
+}
+
+/* 漢堡：桌機隱藏 */
+.admin-toggle {
+  display: none;
   flex-direction: column;
   gap: 5px;
   background: none;
   border: none;
   padding: 6px;
+  margin-left: auto;
 }
-.admin__toggle span {
+.admin-toggle span {
   width: 24px;
   height: 2px;
-  background: var(--color-text);
+  background: #f3f4ee;
   border-radius: 2px;
   transition: transform 0.25s, opacity 0.2s;
 }
-.admin__toggle.open span:nth-child(1) {
+.admin-toggle.open span:nth-child(1) {
   transform: translateY(7px) rotate(45deg);
 }
-.admin__toggle.open span:nth-child(2) {
+.admin-toggle.open span:nth-child(2) {
   opacity: 0;
 }
-.admin__toggle.open span:nth-child(3) {
+.admin-toggle.open span:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 
-.admin__user {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 0.7rem;
-  background: var(--color-surface);
-  border-radius: var(--radius);
-  margin-bottom: 1rem;
-}
-.admin__avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-.admin__user small {
-  display: block;
-  color: var(--color-muted);
-}
-.admin__title {
-  font-size: 1.1rem;
-  margin: 0 0 0.6rem;
-}
-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-nav a {
-  padding: 0.4rem 0.2rem;
-  border-radius: 6px;
-}
-nav a.router-link-exact-active {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-.logout {
-  margin-top: 1.2rem;
-  width: 100%;
-  padding: 0.55rem;
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--color-muted);
-}
-.logout:hover {
-  color: #c0392b;
-  border-color: #e0b4ad;
+/* 內容區 */
+.admin-main {
+  padding: 1.6rem 1rem 3rem;
 }
 
+/* ---- 手機版 ---- */
 @media (max-width: 768px) {
-  .admin {
-    grid-template-columns: 1fr;
-    gap: 0;
-    padding: 0.9rem;
+  .admin-header__inner {
+    flex-wrap: wrap;
   }
-  .admin__topbar {
+  .admin-toggle {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.2rem 0 0.6rem;
   }
-  /* aside 變為可收合的下拉選單 */
-  aside {
-    overflow: hidden;
+  .admin-nav {
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
     max-height: 0;
+    overflow: hidden;
     transition: max-height 0.28s ease;
-    margin-bottom: 0;
   }
-  aside.is-open {
+  .admin-nav.is-open {
     max-height: 640px;
-    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
   }
-  .admin__title {
-    display: none;
+  .admin-nav a {
+    padding: 0.8rem 0.4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
-  nav a {
-    padding: 0.6rem 0.4rem;
-    border-bottom: 1px solid var(--color-line);
+  .logout {
+    margin: 0.6rem 0 0;
+    width: 100%;
+  }
+  .admin-main {
+    padding: 1rem 0.9rem 2.5rem;
   }
 }
 </style>
