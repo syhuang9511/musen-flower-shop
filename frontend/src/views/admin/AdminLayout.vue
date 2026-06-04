@@ -24,6 +24,7 @@ function logout() {
       <h2>後台管理</h2>
       <nav>
         <RouterLink to="/admin">營運儀表板</RouterLink>
+        <RouterLink to="/admin/orders">訂單管理</RouterLink>
         <RouterLink to="/admin/products">商品管理</RouterLink>
         <RouterLink to="/admin/cms">Q&A 管理</RouterLink>
         <RouterLink to="/admin/comments">留言管理</RouterLink>
