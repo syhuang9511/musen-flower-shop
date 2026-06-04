@@ -97,8 +97,13 @@ function resolveAddress() {
 }
 
 async function submitOrder() {
-  if (!form.recipientName || !form.recipientPhone) {
-    toast.show('請填寫收件人姓名與電話')
+  if (!form.recipientName) {
+    toast.show('請填寫收件人姓名')
+    return
+  }
+  const phoneDigits = form.recipientPhone.replace(/\D/g, '')
+  if (phoneDigits.length < 8) {
+    toast.show('請填寫正確的聯絡電話（必填，將以此與您聯繫）')
     return
   }
   if (isTruck.value) {
@@ -177,7 +182,9 @@ const CONTACT = {
       </div>
 
       <p class="notice">
-        我們將於 <strong>24 小時內</strong>回覆確認；若該時段無司機可安排，將主動通知並協助改期或<strong>全額退款取消</strong>。
+        我們將於 <strong>10 分鐘內</strong>以電話／LINE 與您聯繫確認
+        （聯絡電話：<strong>{{ placedOrder.recipient.phone }}</strong>，請保持暢通）；
+        若無司機可安排，將主動通知並協助改期或<strong>全額退款取消</strong>。
       </p>
       <div class="done__actions">
         <RouterLink class="btn btn--ghost" to="/member">前往我的訂單</RouterLink>
@@ -223,7 +230,7 @@ const CONTACT = {
     <section class="block">
       <h2>收件資訊</h2>
       <input v-model="form.recipientName" placeholder="收件人姓名" />
-      <input v-model="form.recipientPhone" placeholder="聯絡電話" />
+      <input v-model="form.recipientPhone" type="tel" placeholder="聯絡電話（必填，將以此與您聯繫）" />
 
       <!-- 專人配送：限雙北，選縣市 + 行政區 + 詳細地址 -->
       <template v-if="isTruck">
