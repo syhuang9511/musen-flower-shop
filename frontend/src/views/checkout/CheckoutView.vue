@@ -1,10 +1,16 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useCartStore, ShippingMethod } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
+import { useOrderAdminStore } from '@/stores/orderAdmin'
+import { useToastStore } from '@/stores/toast'
 import { couponApi, cartApi } from '@/api/modules'
 import GiftForm from '@/components/checkout/GiftForm.vue'
 
 const cart = useCartStore()
+const auth = useAuthStore()
+const orders = useOrderAdminStore()
+const toast = useToastStore()
 
 const shippingLabels = {
   [ShippingMethod.CVS_711]: '7-11 店到店超商取貨',
@@ -12,9 +18,15 @@ const shippingLabels = {
   [ShippingMethod.TRUCK_DEDICATED]: '專人貨車外送',
 }
 
+const SHIPPING_FEES = {
+  [ShippingMethod.CVS_711]: 60,
+  [ShippingMethod.HOME_DELIVERY]: 80,
+  [ShippingMethod.TRUCK_DEDICATED]: 200,
+}
+
 const form = reactive({
   shippingMethod: cart.availableShippingMethods[0],
-  recipientName: '',
+  recipientName: auth.user?.name || '',
   recipientPhone: '',
   address: '',
   isGift: false,
@@ -24,7 +36,16 @@ const form = reactive({
 
 // 5.3 優惠券
 const coupon = reactive({ applied: null, error: '', loading: false })
-const shippingFee = ref(0)
+const shippingFee = computed(() => SHIPPING_FEES[form.shippingMethod] || 0)
+const placedOrder = ref(null)
+const submitting = ref(false)
+
+// Demo 優惠券（後端未啟動時的後備，與 V2 種子券一致）
+const DEMO_COUPONS = {
+  WELCOME100: (sub) => (sub >= 1000 ? { discountAmount: 100 } : { error: '需消費滿 NT$1,000' }),
+  SPRING15: (sub) => (sub >= 800 ? { discountAmount: Math.round(sub * 0.15) } : { error: '需消費滿 NT$800' }),
+  FREESHIP: () => ({ discountAmount: 0, freeShipping: true }),
+}
 
 async function applyCoupon() {
   coupon.error = ''
@@ -36,32 +57,66 @@ async function applyCoupon() {
       items: cart.items,
     })
     coupon.applied = res // { code, discountAmount, ... }
-  } catch (e) {
-    coupon.applied = null
-    coupon.error = e.message
+  } catch {
+    // 後端未啟動 → Demo 後備
+    const code = form.couponCode.trim().toUpperCase()
+    const rule = DEMO_COUPONS[code]
+    const r = rule ? rule(cart.subtotal) : { error: '優惠碼無效' }
+    if (r.error) {
+      coupon.applied = null
+      coupon.error = r.error
+    } else {
+      coupon.applied = { code, ...r }
+    }
   } finally {
     coupon.loading = false
   }
 }
 
 const discount = () => coupon.applied?.discountAmount || 0
-const total = () => cart.subtotal - discount() + shippingFee.value
+const effectiveShipping = () => (coupon.applied?.freeShipping ? 0 : shippingFee.value)
+const total = () => Math.max(0, cart.subtotal - discount() + effectiveShipping())
 
 async function submitOrder() {
+  if (!form.recipientName || !form.recipientPhone) {
+    toast.show('請填寫收件人姓名與電話')
+    return
+  }
+  if (form.shippingMethod !== ShippingMethod.CVS_711 && !form.address) {
+    toast.show('宅配 / 專人配送請填寫收件地址')
+    return
+  }
+  submitting.value = true
   const payload = {
     items: cart.items,
     shippingMethod: form.shippingMethod,
-    recipient: {
-      name: form.recipientName,
-      phone: form.recipientPhone,
-      address: form.address,
-    },
+    recipient: { name: form.recipientName, phone: form.recipientPhone, address: form.address },
     giftInfo: form.isGift ? form.gift : null,
     couponCode: coupon.applied?.code || null,
   }
-  const order = await cartApi.checkout(payload)
-  // 後端回傳綠界付款參數 → 導向 ECPay
-  window.location.href = order.ecpayRedirectUrl
+  try {
+    const order = await cartApi.checkout(payload)
+    // 後端回傳綠界付款參數 → 導向 ECPay
+    window.location.href = order.ecpayRedirectUrl
+  } catch {
+    // 後端未啟動 → Demo 後備：本地成立訂單（會出現在後台訂單管理）
+    const order = orders.placeDemoOrder({
+      user: auth.user,
+      lineItems: cart.items,
+      shippingMethod: form.shippingMethod,
+      recipient: { name: form.recipientName, phone: form.recipientPhone, address: form.address },
+      gift: form.isGift ? form.gift : null,
+      subtotal: cart.subtotal,
+      discount: discount(),
+      shippingFee: effectiveShipping(),
+      total: total(),
+      couponCode: coupon.applied?.code || null,
+    })
+    placedOrder.value = order
+    cart.clear()
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
@@ -69,6 +124,22 @@ async function submitOrder() {
   <div class="container checkout">
     <h1>結帳</h1>
 
+    <!-- 訂單成立 -->
+    <section v-if="placedOrder" class="block done">
+      <div class="done__icon">🌿</div>
+      <h2>訂單已成立！</h2>
+      <p>訂單編號 <strong>{{ placedOrder.orderNo }}</strong></p>
+      <p class="done__total">應付總額 NT$ {{ placedOrder.total.toLocaleString() }}（待付款）</p>
+      <p class="notice">
+        這是 Demo 訂單（後端未啟動），已記入後台「訂單管理」。實際串接綠界後，這一步將導向綠界付款頁。
+      </p>
+      <div class="done__actions">
+        <RouterLink class="btn" to="/products">繼續購物</RouterLink>
+        <RouterLink class="btn btn--ghost" to="/member">查看我的訂單</RouterLink>
+      </div>
+    </section>
+
+    <template v-else>
     <section class="block">
       <h2>配送方式</h2>
       <!-- 5.1 智慧物流過濾：被鎖定時只剩專人貨車，超商選項置灰 -->
@@ -120,10 +191,14 @@ async function submitOrder() {
     <section class="block summary">
       <div>商品小計<span>NT$ {{ cart.subtotal }}</span></div>
       <div>優惠折抵<span>- NT$ {{ discount() }}</span></div>
-      <div>運費<span>NT$ {{ shippingFee }}</span></div>
+      <div>運費<span>NT$ {{ effectiveShipping() }}</span></div>
       <div class="total">應付總額<span>NT$ {{ total() }}</span></div>
-      <button class="btn" :disabled="!cart.items.length" @click="submitOrder">前往付款（綠界）</button>
+      <p v-if="!cart.items.length" class="notice">購物車是空的，先去挑些植栽吧 🌱</p>
+      <button class="btn" :disabled="!cart.items.length || submitting" @click="submitOrder">
+        {{ submitting ? '處理中…' : '前往付款（綠界）' }}
+      </button>
     </section>
+    </template>
   </div>
 </template>
 
@@ -180,6 +255,26 @@ async function submitOrder() {
   border-top: 1px solid #eee;
   margin-top: 0.5rem;
   padding-top: 0.6rem;
+}
+/* 訂單成立 */
+.done {
+  text-align: center;
+}
+.done__icon {
+  font-size: 2.4rem;
+}
+.done h2 {
+  margin: 0.3rem 0 0.6rem;
+}
+.done__total {
+  color: var(--color-muted);
+}
+.done__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
 }
 /* 5.2 平滑展開動畫 */
 .expand-enter-active,

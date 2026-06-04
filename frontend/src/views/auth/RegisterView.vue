@@ -1,9 +1,13 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { authApi } from '@/api/modules'
+import { useAuthStore } from '@/stores/auth'
 import AuthShell from '@/components/auth/AuthShell.vue'
 
 // 4.1 Email 註冊：EmailJS 發送 6 位數驗證碼，後端驗證時效（5 分鐘）與正確性
+const auth = useAuthStore()
+const router = useRouter()
 const form = reactive({ email: '', code: '', password: '' })
 const step = ref(1)
 const msg = ref('')
@@ -12,12 +16,22 @@ const error = ref('')
 async function sendCode() {
   error.value = ''
   msg.value = ''
+  if (!form.email || !form.password) {
+    error.value = '請輸入信箱與密碼'
+    return
+  }
   try {
     await authApi.sendEmailCode(form.email)
     step.value = 2
     msg.value = '驗證碼已寄出，5 分鐘內有效。'
-  } catch (e) {
-    error.value = e.message
+  } catch {
+    // 後端未啟動 → Demo 直接註冊並登入
+    try {
+      auth.registerDemo({ email: form.email, password: form.password })
+      router.push('/')
+    } catch (e2) {
+      error.value = e2.message
+    }
   }
 }
 

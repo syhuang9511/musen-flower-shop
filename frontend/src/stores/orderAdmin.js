@@ -283,6 +283,43 @@ export const useOrderAdminStore = defineStore('orderAdmin', () => {
     if (o) o.status = 'CANCELLED'
   }
 
+  /**
+   * Demo 結帳：把購物車內容成立為一筆新訂單（後端就緒後改由後端 /orders 建立）。
+   * 成立後會出現在訂單管理列表。回傳訂單編號。
+   */
+  function placeDemoOrder(data) {
+    const nextId = items.value.reduce((m, o) => Math.max(m, o.id), 0) + 1
+    const orderNo = 'FS' + String(Date.now()).slice(-8)
+    const order = {
+      id: nextId,
+      orderNo,
+      createdAt: new Date().toISOString(),
+      member: {
+        name: data.user?.name || data.recipient.name,
+        email: data.user?.email || '',
+        phone: data.recipient.phone,
+      },
+      status: 'ACCEPTED',
+      items: data.lineItems.map((i) => ({ productName: i.name, unitPrice: i.price, qty: i.qty })),
+      subtotal: data.subtotal,
+      discount: data.discount || 0,
+      shippingFee: data.shippingFee || 0,
+      total: data.total,
+      couponCode: data.couponCode || null,
+      recipient: {
+        name: data.recipient.name,
+        phone: data.recipient.phone,
+        address: data.recipient.address || '',
+      },
+      shippingMethod: data.shippingMethod,
+      gift: data.gift || null,
+      payment: { status: 'UNPAID', method: '綠界（測試）', ecpayTradeNo: null, merchantTradeNo: orderNo, paidAt: null },
+      logistics: { status: 'PENDING', subType: null, trackingNo: null, ecpayLogisticsId: null, cvsStore: null, shippedAt: null },
+    }
+    items.value = [order, ...items.value]
+    return order
+  }
+
   function resetToSeed() {
     localStorage.removeItem(STORE_KEY)
     items.value = JSON.parse(JSON.stringify(SEED))
@@ -297,6 +334,7 @@ export const useOrderAdminStore = defineStore('orderAdmin', () => {
     createLogistics,
     markShipped,
     cancel,
+    placeDemoOrder,
     resetToSeed,
   }
 })
