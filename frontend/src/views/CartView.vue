@@ -57,7 +57,7 @@ const router = useRouter()
 
 <style scoped>
 .cart {
-  padding: 2rem 0;
+  padding: 2rem 1rem;
 }
 .cart__table {
   width: 100%;

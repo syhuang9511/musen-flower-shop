@@ -162,6 +162,16 @@ onMounted(async () => {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1.5rem;
 }
+/* 手機：固定兩欄一排 */
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+  .card {
+    padding: 0.6rem;
+  }
+}
 .card {
   display: flex;
   flex-direction: column;

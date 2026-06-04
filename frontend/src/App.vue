@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useWishlistStore } from '@/stores/wishlist'
 import AppHeader from '@/components/layout/AppHeader.vue'
@@ -8,6 +9,10 @@ import ToastHost from '@/components/ui/ToastHost.vue'
 
 const auth = useAuthStore()
 const wishlist = useWishlistStore()
+const route = useRoute()
+
+// 後台（/admin）為管理介面，不顯示前台 header/footer
+const isAdminArea = computed(() => route.path.startsWith('/admin'))
 
 onMounted(async () => {
   // 還原登入狀態；登入後合併訪客 LocalStorage 收藏
@@ -20,7 +25,7 @@ onMounted(async () => {
 
 <template>
   <div class="app-shell">
-    <AppHeader />
+    <AppHeader v-if="!isAdminArea" />
     <main class="app-main">
       <RouterView v-slot="{ Component }">
         <Transition name="fade" mode="out-in">
@@ -28,7 +33,7 @@ onMounted(async () => {
         </Transition>
       </RouterView>
     </main>
-    <AppFooter />
+    <AppFooter v-if="!isAdminArea" />
     <ToastHost />
   </div>
 </template>

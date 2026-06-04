@@ -1,5 +1,5 @@
 <template>
-  <div class="container" style="padding: 2rem 0">
+  <div class="container" style="padding: 2rem 1rem">
     <h1>客戶服務專區</h1>
     <h2>付款流程</h2>
     <p>全站採用綠界科技 ECPay，支援信用卡刷卡結帳。</p>

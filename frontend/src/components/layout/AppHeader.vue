@@ -19,22 +19,30 @@ function closeMenu() {
     <div class="container header__inner">
       <RouterLink to="/" class="header__logo" @click="closeMenu">沐森植研所</RouterLink>
 
-      <!-- 手機漢堡按鈕 -->
-      <button class="header__toggle" :aria-expanded="menuOpen" aria-label="選單" @click="menuOpen = !menuOpen">
-        <span></span><span></span><span></span>
-      </button>
-
       <nav class="header__nav" :class="{ 'is-open': menuOpen }" @click="closeMenu">
         <RouterLink to="/products">商品</RouterLink>
         <RouterLink to="/qa">植栽養護</RouterLink>
         <RouterLink to="/contact">聯絡我們</RouterLink>
         <RouterLink to="/service">客戶服務</RouterLink>
-        <div class="header__actions">
-          <RouterLink to="/cart">🛒 <span v-if="cartCount">{{ cartCount }}</span></RouterLink>
-          <RouterLink v-if="auth.isLoggedIn" to="/member">會員中心</RouterLink>
-          <RouterLink v-else to="/login">登入 / 註冊</RouterLink>
-        </div>
+        <RouterLink v-if="auth.isLoggedIn" to="/member">會員中心</RouterLink>
+        <RouterLink v-else to="/login">登入 / 註冊</RouterLink>
       </nav>
+
+      <!-- 右側常駐：購物車 + 漢堡（手機不收起購物車） -->
+      <div class="header__bar">
+        <RouterLink to="/cart" class="header__cart" aria-label="購物車" @click="closeMenu">
+          🛒<span v-if="cartCount" class="header__badge">{{ cartCount }}</span>
+        </RouterLink>
+        <button
+          class="header__toggle"
+          :class="{ open: menuOpen }"
+          :aria-expanded="menuOpen"
+          aria-label="選單"
+          @click="menuOpen = !menuOpen"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 </template>
@@ -63,6 +71,7 @@ function closeMenu() {
   display: flex;
   gap: 1.6rem;
   align-items: center;
+  margin-left: auto; /* 桌機：選單靠右 */
 }
 .header__nav a {
   color: #d6dcd2;
@@ -73,10 +82,35 @@ function closeMenu() {
 .header__nav a:hover {
   color: var(--color-accent);
 }
-.header__actions {
+
+/* 右側常駐區：購物車 + 漢堡 */
+.header__bar {
   display: flex;
-  gap: 1.4rem;
   align-items: center;
+  gap: 1rem;
+  margin-left: 1.6rem;
+}
+.header__cart {
+  position: relative;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #f3f4ee;
+}
+.header__badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #1f2a1f;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 漢堡按鈕：桌機隱藏 */
@@ -93,6 +127,17 @@ function closeMenu() {
   height: 2px;
   background: #f3f4ee;
   border-radius: 2px;
+  transition: transform 0.25s, opacity 0.2s;
+}
+/* 開啟時變 X */
+.header__toggle.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.header__toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+.header__toggle.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* ---- 手機版 ---- */
@@ -115,16 +160,12 @@ function closeMenu() {
     transition: max-height 0.25s ease;
   }
   .header__nav.is-open {
-    max-height: 320px;
+    max-height: 360px;
   }
-  .header__nav > a,
-  .header__actions {
+  .header__nav > a {
     width: 100%;
     padding: 0.9rem 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-  }
-  .header__actions {
-    justify-content: flex-start;
   }
 }
 </style>
