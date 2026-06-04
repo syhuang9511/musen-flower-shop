@@ -26,6 +26,7 @@ function logout() {
         <RouterLink to="/admin">營運儀表板</RouterLink>
         <RouterLink to="/admin/products">商品管理</RouterLink>
         <RouterLink to="/admin/cms">Q&A 管理</RouterLink>
+        <RouterLink to="/admin/comments">留言管理</RouterLink>
         <RouterLink to="/admin/coupons">優惠券管理</RouterLink>
         <RouterLink to="/admin/members">會員管理</RouterLink>
         <RouterLink to="/admin/analytics">購物車分析</RouterLink>

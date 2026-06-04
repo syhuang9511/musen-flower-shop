@@ -1,11 +1,13 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useQaAdminStore } from '@/stores/qaAdmin'
+import { useQaSocialStore } from '@/stores/qaSocial'
 
 const store = useQaAdminStore()
+const social = useQaSocialStore()
 const keyword = ref('')
 const activeCat = ref('全部')
-const openId = ref(null)
 
 const cats = computed(() => ['全部', ...store.categories])
 
@@ -18,10 +20,6 @@ const results = computed(() => {
 function excerpt(text) {
   const first = text.split('\n').find((l) => l.trim()) || text
   return first.length > 70 ? first.slice(0, 70) + '…' : first
-}
-
-function toggle(id) {
-  openId.value = openId.value === id ? null : id
 }
 </script>
 
@@ -57,11 +55,11 @@ function toggle(id) {
 
       <!-- 文章卡片 -->
       <div class="posts">
-        <article
+        <RouterLink
           v-for="q in results"
           :key="q.id"
+          :to="`/qa/${q.id}`"
           class="post"
-          :class="{ open: openId === q.id }"
         >
           <div class="post__media">
             <img :src="q.image" :alt="q.question" loading="lazy" />
@@ -69,13 +67,14 @@ function toggle(id) {
           </div>
           <div class="post__body">
             <h2 class="post__title">{{ q.question }}</h2>
-            <p v-if="openId !== q.id" class="post__excerpt">{{ excerpt(q.answer) }}</p>
-            <div v-else class="post__full">{{ q.answer }}</div>
-            <button class="post__more" @click="toggle(q.id)">
-              {{ openId === q.id ? '收合 ▲' : '閱讀更多 →' }}
-            </button>
+            <p class="post__excerpt">{{ excerpt(q.answer) }}</p>
+            <div class="post__foot">
+              <span class="post__stat">❤️ {{ social.likeCount(q.id) }}</span>
+              <span class="post__stat">💬 {{ social.commentCount(q.id) }}</span>
+              <span class="post__more">閱讀更多 →</span>
+            </div>
           </div>
-        </article>
+        </RouterLink>
       </div>
     </div>
   </div>
@@ -167,6 +166,14 @@ function toggle(id) {
   border-radius: 14px;
   overflow: hidden;
   box-shadow: var(--shadow);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.post:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
 }
 .post__media {
   position: relative;
@@ -204,21 +211,23 @@ function toggle(id) {
   color: var(--color-muted);
   line-height: 1.7;
 }
-.post__full {
-  margin: 0;
-  color: #4a514a;
-  line-height: 1.9;
-  white-space: pre-line;
+.post__foot {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+.post__stat {
+  font-size: 0.85rem;
+  color: var(--color-muted);
 }
 .post__more {
-  align-self: flex-start;
-  margin-top: 1rem;
-  background: none;
-  border: none;
+  margin-left: auto;
   color: var(--color-primary);
   font-weight: 600;
   letter-spacing: 0.03em;
-  padding: 0;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 680px) {

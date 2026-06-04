@@ -11,8 +11,8 @@ import { computed, ref } from 'vue'
 const SESSION_KEY = 'floral_admin_session'
 
 const ACCOUNTS = [
-  { username: 'yun', password: '1234', name: 'Yun', role: 'ADMIN' },
-  { username: 'admin', password: '1234', name: '系統管理員', role: 'ADMIN' },
+  { username: 'yun', password: '1234', name: '小花', role: 'ADMIN' },
+  { username: 'admin', password: '1234', name: '大明', role: 'ADMIN' },
 ]
 
 export const useAdminAuthStore = defineStore('adminAuth', () => {

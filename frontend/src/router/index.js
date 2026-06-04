@@ -24,6 +24,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   { path: '/qa', name: 'qa', component: () => import('@/views/QaView.vue') },
+  {
+    path: '/qa/:id',
+    name: 'qa-detail',
+    component: () => import('@/views/QaDetailView.vue'),
+    props: true,
+  },
   { path: '/contact', name: 'contact', component: () => import('@/views/ContactView.vue') },
   { path: '/service', name: 'service', component: () => import('@/views/ServiceView.vue') },
 
@@ -61,6 +67,7 @@ const routes = [
       { path: '', name: 'admin-dashboard', component: () => import('@/views/admin/DashboardView.vue') },
       { path: 'products', name: 'admin-products', component: () => import('@/views/admin/ProductsView.vue') },
       { path: 'cms', name: 'admin-cms', component: () => import('@/views/admin/CmsView.vue') },
+      { path: 'comments', name: 'admin-comments', component: () => import('@/views/admin/QaCommentsView.vue') },
       { path: 'coupons', name: 'admin-coupons', component: () => import('@/views/admin/CouponsView.vue') },
       { path: 'members', name: 'admin-members', component: () => import('@/views/admin/MembersView.vue') },
       { path: 'analytics', name: 'admin-analytics', component: () => import('@/views/admin/AnalyticsView.vue') },
