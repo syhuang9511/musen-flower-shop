@@ -31,6 +31,9 @@ app:
     ttl-minutes: 5               # 4.1 驗證碼時效
   cors:
     allowed-origins: http://localhost:5173
+  oauth:
+    # Google / LINE 授權後導回前端的網址基底（redirect_uri = 此值 + /auth/{provider}/callback）
+    redirect-base-url: http://localhost:5173
   rate-limit:
     login-per-minute: 10         # 8.1 限流防護
     payment-per-minute: 5

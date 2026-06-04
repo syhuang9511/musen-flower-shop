@@ -15,11 +15,12 @@ export const useAuthStore = defineStore('auth', () => {
     else localStorage.removeItem('access_token')
   }
 
-  /** 應用啟動時還原登入狀態 */
+  /** 應用啟動時還原登入狀態（後端統一回 { code, message, data }，取 data） */
   async function restoreSession() {
     if (!token.value) return
     try {
-      user.value = await authApi.me()
+      const res = await authApi.me()
+      user.value = res.data
     } catch {
       setToken('')
       user.value = null
@@ -28,16 +29,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   /** Email + 密碼登入 */
   async function loginByEmail(payload) {
-    const res = await authApi.loginByEmail(payload)
-    setToken(res.accessToken)
-    user.value = res.user
+    const { data } = await authApi.loginByEmail(payload)
+    setToken(data.accessToken)
+    user.value = data.user
   }
 
   /** Google / LINE 一鍵登入：用 provider 授權碼換 token */
   async function loginByOAuth(provider, code) {
-    const res = await authApi.oauth(provider, code)
-    setToken(res.accessToken)
-    user.value = res.user
+    const { data } = await authApi.oauth(provider, code)
+    setToken(data.accessToken)
+    user.value = data.user
   }
 
   async function logout() {
