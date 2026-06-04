@@ -21,8 +21,15 @@ const shippingLabels = {
 const SHIPPING_FEES = {
   [ShippingMethod.CVS_711]: 60,
   [ShippingMethod.HOME_DELIVERY]: 80,
-  [ShippingMethod.TRUCK_DEDICATED]: 200,
+  [ShippingMethod.TRUCK_DEDICATED]: 500, // 專人貨車：雙北專人配送
 }
+
+// 專人配送服務範圍：僅限台北市 / 新北市
+const TRUCK_AREAS = {
+  台北市: ['中正區', '大同區', '中山區', '松山區', '大安區', '萬華區', '信義區', '士林區', '北投區', '內湖區', '南港區', '文山區'],
+  新北市: ['板橋區', '三重區', '中和區', '永和區', '新莊區', '新店區', '土城區', '蘆洲區', '汐止區', '樹林區', '三峽區', '淡水區', '林口區', '五股區', '泰山區', '鶯歌區', '深坑區', '八里區', '三芝區'],
+}
+const truckCities = Object.keys(TRUCK_AREAS)
 
 const form = reactive({
   shippingMethod: cart.availableShippingMethods[0],
@@ -34,10 +41,16 @@ const form = reactive({
   couponCode: '',
 })
 
+// 專人配送專用地址（限雙北）
+const truckAddr = reactive({ city: '台北市', district: '', detail: '' })
+const isTruck = computed(() => form.shippingMethod === ShippingMethod.TRUCK_DEDICATED)
+const truckDistricts = computed(() => TRUCK_AREAS[truckAddr.city] || [])
+
 // 5.3 優惠券
 const coupon = reactive({ applied: null, error: '', loading: false })
 const shippingFee = computed(() => SHIPPING_FEES[form.shippingMethod] || 0)
 const placedOrder = ref(null)
+const placedTruck = ref(false)
 const submitting = ref(false)
 
 // Demo 優惠券（後端未啟動時的後備，與 V2 種子券一致）
@@ -77,20 +90,32 @@ const discount = () => coupon.applied?.discountAmount || 0
 const effectiveShipping = () => (coupon.applied?.freeShipping ? 0 : shippingFee.value)
 const total = () => Math.max(0, cart.subtotal - discount() + effectiveShipping())
 
+// 依配送方式組出最終地址
+function resolveAddress() {
+  if (isTruck.value) return `${truckAddr.city}${truckAddr.district}${truckAddr.detail}`
+  return form.address
+}
+
 async function submitOrder() {
   if (!form.recipientName || !form.recipientPhone) {
     toast.show('請填寫收件人姓名與電話')
     return
   }
-  if (form.shippingMethod !== ShippingMethod.CVS_711 && !form.address) {
-    toast.show('宅配 / 專人配送請填寫收件地址')
+  if (isTruck.value) {
+    if (!truckAddr.district || !truckAddr.detail) {
+      toast.show('專人配送請選擇行政區並填寫詳細地址（限台北市／新北市）')
+      return
+    }
+  } else if (form.shippingMethod === ShippingMethod.HOME_DELIVERY && !form.address) {
+    toast.show('宅配請填寫收件地址')
     return
   }
   submitting.value = true
+  const address = resolveAddress()
   const payload = {
     items: cart.items,
     shippingMethod: form.shippingMethod,
-    recipient: { name: form.recipientName, phone: form.recipientPhone, address: form.address },
+    recipient: { name: form.recipientName, phone: form.recipientPhone, address },
     giftInfo: form.isGift ? form.gift : null,
     couponCode: coupon.applied?.code || null,
   }
@@ -104,7 +129,7 @@ async function submitOrder() {
       user: auth.user,
       lineItems: cart.items,
       shippingMethod: form.shippingMethod,
-      recipient: { name: form.recipientName, phone: form.recipientPhone, address: form.address },
+      recipient: { name: form.recipientName, phone: form.recipientPhone, address },
       gift: form.isGift ? form.gift : null,
       subtotal: cart.subtotal,
       discount: discount(),
@@ -112,11 +137,19 @@ async function submitOrder() {
       total: total(),
       couponCode: coupon.applied?.code || null,
     })
+    placedTruck.value = isTruck.value
     placedOrder.value = order
     cart.clear()
   } finally {
     submitting.value = false
   }
+}
+
+// 專人配送聯繫資訊（請替換為實際門市資訊）
+const CONTACT = {
+  lineUrl: 'https://line.me/R/ti/p/@musen',
+  lineId: '@musen',
+  phone: '02-2700-0000',
 }
 </script>
 
@@ -124,8 +157,35 @@ async function submitOrder() {
   <div class="container checkout">
     <h1>結帳</h1>
 
-    <!-- 訂單成立 -->
-    <section v-if="placedOrder" class="block done">
+    <!-- 專人配送：確認頁（待安排司機，請客人主動聯繫） -->
+    <section v-if="placedOrder && placedTruck" class="block confirm">
+      <div class="confirm__icon">🚚</div>
+      <h2>專人配送預約已送出</h2>
+      <p>訂單編號 <strong>{{ placedOrder.orderNo }}</strong>・狀態：<strong class="pending">待確認配送</strong></p>
+      <p class="confirm__lead">
+        您的商品含大型／脆弱植栽，將由<strong>專人貨車配送（限台北市／新北市）</strong>，
+        需與您確認<strong>送達時段與司機檔期</strong>後才會出車。
+      </p>
+
+      <div class="confirm__cta">
+        <p class="confirm__cta-title">📞 請主動與我們聯繫，加快為您安排司機</p>
+        <div class="confirm__btns">
+          <a class="btn line" :href="CONTACT.lineUrl" target="_blank" rel="noopener">加 LINE 確認（{{ CONTACT.lineId }}）</a>
+          <a class="btn btn--ghost" :href="`tel:${CONTACT.phone}`">撥打 {{ CONTACT.phone }}</a>
+        </div>
+        <p class="confirm__quote">聯繫時請報訂單編號 <strong>{{ placedOrder.orderNo }}</strong></p>
+      </div>
+
+      <p class="notice">
+        我們將於 <strong>24 小時內</strong>回覆確認；若該時段無司機可安排，將主動通知並協助改期或<strong>全額退款取消</strong>。
+      </p>
+      <div class="done__actions">
+        <RouterLink class="btn btn--ghost" to="/member">前往我的訂單</RouterLink>
+      </div>
+    </section>
+
+    <!-- 一般訂單成立 -->
+    <section v-else-if="placedOrder" class="block done">
       <div class="done__icon">🌿</div>
       <h2>訂單已成立！</h2>
       <p>訂單編號 <strong>{{ placedOrder.orderNo }}</strong></p>
@@ -164,14 +224,48 @@ async function submitOrder() {
       <h2>收件資訊</h2>
       <input v-model="form.recipientName" placeholder="收件人姓名" />
       <input v-model="form.recipientPhone" placeholder="聯絡電話" />
-      <input v-model="form.address" placeholder="收件地址" />
+
+      <!-- 專人配送：限雙北，選縣市 + 行政區 + 詳細地址 -->
+      <template v-if="isTruck">
+        <p class="area-note">🚚 專人配送僅服務 <strong>台北市 / 新北市</strong>，運費 NT$500。</p>
+        <div class="addr-row">
+          <select v-model="truckAddr.city" @change="truckAddr.district = ''">
+            <option v-for="c in truckCities" :key="c" :value="c">{{ c }}</option>
+          </select>
+          <select v-model="truckAddr.district">
+            <option value="" disabled>選擇行政區</option>
+            <option v-for="d in truckDistricts" :key="d" :value="d">{{ d }}</option>
+          </select>
+        </div>
+        <input v-model="truckAddr.detail" placeholder="詳細地址（路 / 街 / 巷弄號樓）" />
+      </template>
+
+      <!-- 宅配 -->
+      <input
+        v-else-if="form.shippingMethod === ShippingMethod.HOME_DELIVERY"
+        v-model="form.address"
+        placeholder="收件地址"
+      />
+
+      <!-- 超商取貨 -->
+      <p v-else class="area-note">🏪 超商取貨：實際串接綠界後，於此選擇取貨門市。</p>
     </section>
 
     <!-- 5.2 送禮專用客製化模組 -->
     <section class="block">
-      <label class="gift-toggle">
-        <input type="checkbox" v-model="form.isGift" /> 這是一份祝賀禮物
-      </label>
+      <button
+        type="button"
+        class="gift-switch"
+        :class="{ on: form.isGift }"
+        @click="form.isGift = !form.isGift"
+      >
+        <span class="gift-switch__icon">🎁</span>
+        <span class="gift-switch__text">
+          <strong>這是一份祝賀禮物</strong>
+          <small>填寫賀詞、收禮人與希望送達時間</small>
+        </span>
+        <span class="gift-switch__knob" aria-hidden="true"></span>
+      </button>
       <Transition name="expand">
         <GiftForm v-if="form.isGift" v-model="form.gift" />
       </Transition>
@@ -275,6 +369,139 @@ async function submitOrder() {
   gap: 0.8rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+}
+
+/* 雙北地址 */
+.area-note {
+  background: #f1f4ef;
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.88rem;
+  color: #4a514a;
+  margin: 0.6rem 0 0.4rem;
+}
+.addr-row {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.4rem 0;
+}
+.addr-row select {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+}
+
+/* 禮物開關 */
+.gift-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+.gift-switch.on {
+  border-color: var(--color-primary);
+  background: #f3f7f1;
+}
+.gift-switch__icon {
+  font-size: 1.5rem;
+  filter: grayscale(0.4);
+  transition: filter 0.2s, transform 0.2s;
+}
+.gift-switch.on .gift-switch__icon {
+  filter: none;
+  transform: scale(1.1);
+}
+.gift-switch__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.gift-switch__text small {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+.gift-switch__knob {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: #d6d6d6;
+  position: relative;
+  transition: background 0.2s;
+}
+.gift-switch__knob::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.gift-switch.on .gift-switch__knob {
+  background: var(--color-primary);
+}
+.gift-switch.on .gift-switch__knob::after {
+  transform: translateX(20px);
+}
+
+/* 專人配送確認頁 */
+.confirm {
+  text-align: center;
+}
+.confirm__icon {
+  font-size: 2.6rem;
+}
+.confirm h2 {
+  margin: 0.3rem 0 0.6rem;
+}
+.pending {
+  color: #97640d;
+}
+.confirm__lead {
+  color: #4a514a;
+  line-height: 1.8;
+  max-width: 460px;
+  margin: 0.6rem auto;
+}
+.confirm__cta {
+  background: #f3f7f1;
+  border: 1px solid #d9e4d4;
+  border-radius: 12px;
+  padding: 1.1rem;
+  margin: 1.2rem 0;
+}
+.confirm__cta-title {
+  font-weight: 700;
+  margin: 0 0 0.7rem;
+}
+.confirm__btns {
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+.confirm__quote {
+  margin: 0.8rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+.btn.line {
+  background: #06c755;
+}
+.confirm__policy {
+  font-size: 0.9rem;
 }
 /* 5.2 平滑展開動畫 */
 .expand-enter-active,

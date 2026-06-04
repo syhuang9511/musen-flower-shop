@@ -189,7 +189,7 @@ function close() {
           <p>收禮人：{{ selected.gift.recipientName }}・{{ selected.gift.recipientPhone }}</p>
           <p v-if="selected.gift.companyName" class="muted">公司：{{ selected.gift.companyName }}</p>
           <p class="card-msg">「{{ selected.gift.cardMessage }}」</p>
-          <p class="muted">指定送達：{{ selected.gift.deliverySlot }}</p>
+          <p class="muted">希望送達：{{ selected.gift.deliveryDate || '未指定' }} {{ selected.gift.deliverySlot }}</p>
         </section>
 
         <!-- 商品明細 -->
@@ -238,7 +238,18 @@ function close() {
           </div>
 
           <template v-if="selected.shippingMethod === 'TRUCK_DEDICATED'">
-            <p class="truck-note">🚛 專人貨車外送（大型／脆弱植栽）— 由自有車隊配送，不走第三方物流 API。</p>
+            <p class="truck-note">
+              🚛 專人貨車外送（大型／脆弱植栽・限台北市／新北市）— 自有車隊<strong>人工安排司機</strong>，不走第三方物流 API。
+            </p>
+            <div v-if="selected.status === 'ACCEPTED'" class="actions">
+              <button class="btn btn--sm" @click="store.updateStatus(selected.id, 'PREPARING')">
+                ✓ 已安排司機（確認配送）
+              </button>
+              <button class="btn btn--sm danger-btn" @click="store.cancel(selected.id)">
+                ✗ 無司機可安排（取消）
+              </button>
+            </div>
+            <p v-else class="muted small">目前配送狀態：{{ ORDER_STATUS[selected.status] }}</p>
           </template>
           <template v-else>
             <div class="kv"><span>物流子類型</span><span>{{ selected.logistics.subType || '—' }}</span></div>
@@ -545,6 +556,12 @@ function close() {
 }
 .btn--sm {
   padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+}
+.danger-btn {
+  background: #c0392b;
+}
+.small {
   font-size: 0.85rem;
 }
 .btn--ghost {
