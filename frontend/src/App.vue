@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useWishlistStore } from '@/stores/wishlist'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import LineFab from '@/components/layout/LineFab.vue'
 import ToastHost from '@/components/ui/ToastHost.vue'
 
 const auth = useAuthStore()
@@ -34,6 +35,7 @@ onMounted(async () => {
       </RouterView>
     </main>
     <AppFooter v-if="!isAdminArea" />
+    <LineFab v-if="!isAdminArea" />
     <ToastHost />
   </div>
 </template>
