@@ -7,12 +7,29 @@ import {
   LOGISTICS_STATUS,
   SHIPPING_METHOD,
 } from '@/stores/orderAdmin'
+import {
+  exportOrdersCsv,
+  exportOrdersXlsx,
+  printOrders,
+  printSingleOrder,
+} from '@/utils/exportOrders'
 
 const store = useOrderAdminStore()
 
 const keyword = ref('')
 const statusFilter = ref('ALL')
 const selectedId = ref(null)
+const exportingXlsx = ref(false)
+
+async function onExportXlsx() {
+  if (!filtered.value.length) return
+  exportingXlsx.value = true
+  try {
+    await exportOrdersXlsx(filtered.value)
+  } finally {
+    exportingXlsx.value = false
+  }
+}
 
 const selected = computed(() => (selectedId.value ? store.find(selectedId.value) : null))
 
@@ -77,6 +94,14 @@ function close() {
         <option value="ALL">全部狀態</option>
         <option v-for="(label, key) in ORDER_STATUS" :key="key" :value="key">{{ label }}</option>
       </select>
+      <div class="exports">
+        <span class="exports__label">匯出（{{ filtered.length }} 筆）</span>
+        <button class="exp" :disabled="!filtered.length || exportingXlsx" @click="onExportXlsx">
+          {{ exportingXlsx ? '產生中…' : 'Excel' }}
+        </button>
+        <button class="exp" :disabled="!filtered.length" @click="exportOrdersCsv(filtered)">CSV</button>
+        <button class="exp" :disabled="!filtered.length" @click="printOrders(filtered, '訂單清單')">PDF / 列印</button>
+      </div>
     </div>
 
     <!-- 列表 -->
@@ -125,7 +150,10 @@ function close() {
             <h2>{{ selected.orderNo }}</h2>
             <small class="muted">下單時間 {{ fmt(selected.createdAt) }}</small>
           </div>
-          <button class="x" @click="close">✕</button>
+          <div class="modal__head-ops">
+            <button class="exp" @click="printSingleOrder(selected)">🖨 列印出貨單</button>
+            <button class="x" @click="close">✕</button>
+          </div>
         </header>
 
         <!-- 訂單狀態 -->
@@ -277,6 +305,39 @@ function close() {
   border-radius: 8px;
   font: inherit;
   background: var(--color-surface);
+}
+.exports {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+.exports__label {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-right: 0.2rem;
+}
+.exp {
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.85rem;
+  transition: background 0.15s, color 0.15s;
+}
+.exp:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: #fff;
+}
+.exp:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.modal__head-ops {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 .empty {
   color: var(--color-muted);
