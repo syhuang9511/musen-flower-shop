@@ -90,11 +90,8 @@ const count = computed(() => store.items.length)
     <div v-if="showForm" class="modal" @click.self="showForm = false">
       <div class="modal__card">
         <h2>{{ editingId ? '編輯橫幅' : '新增橫幅' }}</h2>
-        <label>橫幅圖片（建議寬幅 1600×600）</label>
+        <label>橫幅圖片（請上傳檔案，建議寬幅 1600×600）</label>
         <ImageUpload v-model="form.image" />
-        <label>或貼上圖片網址
-          <input v-model="form.image" placeholder="https://..." />
-        </label>
         <label>主標題<input v-model="form.title" placeholder="例：母親節限定花禮" /></label>
         <label>副標題 / 活動說明
           <input v-model="form.subtitle" placeholder="例：滿 NT$1,000 折 100" />
