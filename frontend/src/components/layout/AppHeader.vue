@@ -22,6 +22,7 @@ function closeMenu() {
       <nav class="header__nav" :class="{ 'is-open': menuOpen }" @click="closeMenu">
         <RouterLink to="/products">商品</RouterLink>
         <RouterLink to="/qa">植栽養護</RouterLink>
+        <RouterLink to="/pet-safe">毛孩安全植物</RouterLink>
         <RouterLink to="/contact">聯絡我們</RouterLink>
         <RouterLink to="/service">客戶服務</RouterLink>
         <RouterLink v-if="auth.isLoggedIn" to="/member">會員中心</RouterLink>

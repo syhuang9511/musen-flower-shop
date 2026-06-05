@@ -4,6 +4,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 const props = defineProps({
   banners: { type: Array, default: () => [] },
   interval: { type: Number, default: 5000 },
+  kicker: { type: String, default: '最新活動' },
 })
 
 const current = ref(0)
@@ -59,7 +60,7 @@ watch(count, () => {
       :style="{ backgroundImage: `linear-gradient(rgba(43,53,44,.4), rgba(43,53,44,.55)), url(${b.image})` }"
     >
       <div class="banner__caption">
-        <p v-if="b.subtitle" class="banner__kicker">最新活動</p>
+        <p v-if="b.subtitle" class="banner__kicker">{{ b.kicker || kicker }}</p>
         <h2>{{ b.title }}</h2>
         <p v-if="b.subtitle" class="banner__sub">{{ b.subtitle }}</p>
         <a v-if="b.link && isExternal(b.link)" class="banner__btn" :href="b.link" target="_blank" rel="noopener">查看活動</a>

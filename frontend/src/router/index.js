@@ -30,6 +30,7 @@ const routes = [
     component: () => import('@/views/QaDetailView.vue'),
     props: true,
   },
+  { path: '/pet-safe', name: 'pet-safe', component: () => import('@/views/PetSafeView.vue') },
   { path: '/contact', name: 'contact', component: () => import('@/views/ContactView.vue') },
   { path: '/service', name: 'service', component: () => import('@/views/ServiceView.vue') },
 
