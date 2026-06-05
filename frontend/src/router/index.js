@@ -67,6 +67,7 @@ const routes = [
       { path: '', name: 'admin-dashboard', component: () => import('@/views/admin/DashboardView.vue') },
       { path: 'orders', name: 'admin-orders', component: () => import('@/views/admin/OrdersView.vue') },
       { path: 'products', name: 'admin-products', component: () => import('@/views/admin/ProductsView.vue') },
+      { path: 'banners', name: 'admin-banners', component: () => import('@/views/admin/BannersView.vue') },
       { path: 'cms', name: 'admin-cms', component: () => import('@/views/admin/CmsView.vue') },
       { path: 'comments', name: 'admin-comments', component: () => import('@/views/admin/QaCommentsView.vue') },
       { path: 'coupons', name: 'admin-coupons', component: () => import('@/views/admin/CouponsView.vue') },

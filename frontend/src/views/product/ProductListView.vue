@@ -5,12 +5,15 @@ import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
 import { useProductAdminStore } from '@/stores/productAdmin'
 import { useCategoryStore } from '@/stores/category'
+import { useBannerAdminStore } from '@/stores/bannerAdmin'
+import BannerCarousel from '@/components/ui/BannerCarousel.vue'
 
 const products = ref([])
 const cart = useCartStore()
 const wishlist = useWishlistStore()
 const catalog = useProductAdminStore()
 const categoryStore = useCategoryStore()
+const banners = useBannerAdminStore()
 
 const activeCategory = ref('全部')
 const tabs = computed(() => ['全部', ...categoryStore.categories])
@@ -38,6 +41,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <BannerCarousel :banners="banners.activeBanners" />
   <div class="shop">
     <div class="shop__bg" aria-hidden="true"></div>
 
