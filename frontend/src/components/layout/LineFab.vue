@@ -1,6 +1,7 @@
 <script setup>
-// LINE 線上客服懸浮按鈕。請將 lineUrl 換成你的 LINE 官方帳號連結。
-const lineUrl = 'https://line.me/R/ti/p/@musen'
+// LINE 線上客服懸浮按鈕（連結集中於 config/contact.js）
+import { CONTACT } from '@/config/contact'
+const lineUrl = CONTACT.lineUrl
 </script>
 
 <template>

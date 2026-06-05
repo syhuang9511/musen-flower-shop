@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useOrderAdminStore } from '@/stores/orderAdmin'
 import { useToastStore } from '@/stores/toast'
 import { couponApi, cartApi } from '@/api/modules'
+import { CONTACT } from '@/config/contact'
 import GiftForm from '@/components/checkout/GiftForm.vue'
 
 const cart = useCartStore()
@@ -149,13 +150,6 @@ async function submitOrder() {
     submitting.value = false
   }
 }
-
-// 專人配送聯繫資訊（請替換為實際門市資訊）
-const CONTACT = {
-  lineUrl: 'https://line.me/R/ti/p/@musen',
-  lineId: '@musen',
-  phone: '02-2700-0000',
-}
 </script>
 
 <template>
@@ -200,8 +194,14 @@ const CONTACT = {
       <p class="notice">
         這是 Demo 訂單（後端未啟動），已記入後台「訂單管理」。實際串接綠界後，這一步將導向綠界付款頁。
       </p>
+
+      <div class="track">
+        <a class="btn line" :href="CONTACT.lineUrl" target="_blank" rel="noopener">加 LINE 追蹤訂單</a>
+        <p class="track__hint">加 LINE 並提供訂單編號 <strong>{{ placedOrder.orderNo }}</strong>，即可隨時追蹤訂單與物流進度。</p>
+      </div>
+
       <div class="done__actions">
-        <RouterLink class="btn" to="/products">繼續購物</RouterLink>
+        <RouterLink class="btn btn--ghost" to="/products">繼續購物</RouterLink>
         <RouterLink class="btn btn--ghost" to="/member">查看我的訂單</RouterLink>
       </div>
     </section>
@@ -376,6 +376,14 @@ const CONTACT = {
   gap: 0.8rem;
   flex-wrap: wrap;
   margin-top: 1rem;
+}
+.track {
+  margin: 1.2rem 0 0.6rem;
+}
+.track__hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  color: var(--color-muted);
 }
 
 /* 雙北地址 */
