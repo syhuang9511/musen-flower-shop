@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 
-// 包裝照片：請將你的照片存成 frontend/public/packaging.jpg 即會顯示；
-// 尚未放入前，自動退回示意圖。
+// 包裝示意圖（品牌插圖）。若日後要換成實拍照片，存成 frontend/public/packaging.jpg
+// 並把下面的 .svg 改為 .jpg 即可。
 const base = import.meta.env.BASE_URL
-const packImg = ref(`${base}packaging.jpg`)
+const packImg = ref(`${base}packaging.svg`)
 function onImgError() {
   packImg.value =
     'https://images.unsplash.com/photo-1606722590583-6951b5ea92ad?auto=format&fit=crop&w=1200&q=70'

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-label="職人手工包裝">
+  <!-- 背景 -->
+  <rect width="800" height="450" fill="#eaeee6"/>
+  <circle cx="135" cy="120" r="160" fill="#e1e8da"/>
+  <circle cx="690" cy="90" r="120" fill="#e1e8da"/>
+  <!-- 桌面 -->
+  <rect y="330" width="800" height="120" fill="#d8c3a0"/>
+  <rect y="330" width="800" height="7" fill="#c7ad84"/>
+
+  <!-- 散落葉片（背景） -->
+  <g fill="#9caf94">
+    <path d="M70 360 C60 340 75 318 100 312 C108 336 96 358 70 360 Z"/>
+    <path d="M735 350 C748 330 735 306 710 302 C700 326 712 348 735 350 Z"/>
+  </g>
+
+  <!-- 麻繩線軸 -->
+  <g>
+    <ellipse cx="158" cy="372" rx="46" ry="20" fill="#b58a55"/>
+    <rect x="112" y="338" width="92" height="34" fill="#c79a62"/>
+    <ellipse cx="158" cy="338" rx="46" ry="20" fill="#d9b27e"/>
+    <g stroke="#b58a55" stroke-width="1.4" opacity="0.7">
+      <line x1="120" y1="334" x2="120" y2="372"/>
+      <line x1="134" y1="332" x2="134" y2="374"/>
+      <line x1="148" y1="331" x2="148" y2="375"/>
+      <line x1="162" y1="331" x2="162" y2="375"/>
+      <line x1="176" y1="332" x2="176" y2="374"/>
+      <line x1="190" y1="334" x2="190" y2="372"/>
+    </g>
+    <ellipse cx="158" cy="338" rx="14" ry="6" fill="#b58a55"/>
+  </g>
+
+  <!-- 牛皮紙盒（立體） -->
+  <!-- 右側面 -->
+  <polygon points="520,250 580,210 580,330 520,370" fill="#a87c43"/>
+  <!-- 頂面 -->
+  <polygon points="300,250 360,210 580,210 520,250" fill="#dcb681"/>
+  <!-- 正面 -->
+  <rect x="300" y="250" width="220" height="120" fill="#c89a5d"/>
+  <!-- 封箱膠帶 -->
+  <rect x="392" y="250" width="36" height="120" fill="#b98a4f"/>
+  <polygon points="392,250 428,250 452,231 416,231" fill="#caa066"/>
+  <!-- 品牌標籤 -->
+  <rect x="330" y="278" width="120" height="62" rx="6" fill="#efe9dd"/>
+  <!-- 標籤上的嫩芽 logo -->
+  <g transform="translate(390,300)">
+    <path d="M0 16 C0 11 0 7 0 3" fill="none" stroke="#4a5d4e" stroke-width="2" stroke-linecap="round"/>
+    <path d="M0 9 C-5 10 -8 7 -8 2 C-3 2 0 4 0 9 Z" fill="#9caf94"/>
+    <path d="M0 6 C5 7 8 4 8 -1 C3 -1 0 1 0 6 Z" fill="#6f8466"/>
+  </g>
+  <text x="390" y="332" text-anchor="middle" font-family="'Noto Sans TC',sans-serif" font-size="13" fill="#4a5d4e" font-weight="600">沐森植研所</text>
+
+  <!-- 盒上尤加利葉枝 -->
+  <g transform="rotate(-12 430 222)">
+    <path d="M330 224 C400 214 470 214 540 222" fill="none" stroke="#7d8f73" stroke-width="3" stroke-linecap="round"/>
+    <g fill="#9caf94">
+      <ellipse cx="350" cy="216" rx="13" ry="9"/>
+      <ellipse cx="384" cy="210" rx="14" ry="9"/>
+      <ellipse cx="420" cy="208" rx="14" ry="9"/>
+      <ellipse cx="456" cy="210" rx="14" ry="9"/>
+      <ellipse cx="490" cy="214" rx="13" ry="9"/>
+      <ellipse cx="520" cy="220" rx="11" ry="8"/>
+    </g>
+    <g fill="#b9c7b0">
+      <ellipse cx="367" cy="230" rx="11" ry="7"/>
+      <ellipse cx="403" cy="226" rx="12" ry="7"/>
+      <ellipse cx="439" cy="225" rx="12" ry="7"/>
+      <ellipse cx="473" cy="228" rx="11" ry="7"/>
+    </g>
+  </g>
+
+  <!-- 剪刀 -->
+  <g transform="rotate(18 640 360)" stroke="#5a5f57" stroke-width="6" fill="none" stroke-linecap="round">
+    <line x1="600" y1="345" x2="660" y2="380"/>
+    <line x1="600" y1="380" x2="660" y2="345"/>
+    <circle cx="666" cy="384" r="9"/>
+    <circle cx="666" cy="341" r="9"/>
+  </g>
+</svg>
