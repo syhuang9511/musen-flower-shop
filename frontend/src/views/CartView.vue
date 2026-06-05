@@ -20,7 +20,12 @@ const router = useRouter()
         </thead>
         <tbody>
           <tr v-for="i in cart.items" :key="i.productId">
-            <td>{{ i.name }}</td>
+            <td>
+              <div class="cart__product">
+                <img v-if="i.image" class="cart__thumb" :src="i.image" :alt="i.name" loading="lazy" />
+                <span>{{ i.name }}</span>
+              </div>
+            </td>
             <td>NT$ {{ i.price }}</td>
             <td>
               <div class="qty">
@@ -77,6 +82,18 @@ const router = useRouter()
   justify-content: space-between;
   align-items: center;
   margin: 1.5rem 0;
+}
+.cart__product {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.cart__thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex: 0 0 auto;
 }
 .qty {
   display: inline-flex;
