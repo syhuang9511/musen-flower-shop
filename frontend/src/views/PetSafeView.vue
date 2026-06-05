@@ -1,6 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import BannerCarousel from '@/components/ui/BannerCarousel.vue'
+
+// 照片載入失敗時退回 emoji
+const imgFailed = reactive({})
 
 const slides = [
   {
@@ -29,6 +32,7 @@ const pets = [
     name: '貓咪',
     en: 'Cats',
     emoji: '🐱',
+    photo: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=320&q=70',
     intro:
       '貓咪對許多常見室內植物（如百合、黃金葛、龜背芋）都會產生嚴重的中毒反應。以下這些花草對貓咪完全無毒，能讓牠安全探索與玩耍：',
     groups: [
@@ -64,6 +68,7 @@ const pets = [
     name: '狗狗',
     en: 'Dogs',
     emoji: '🐶',
+    photo: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=320&q=70',
     intro: '狗狗有時會因無聊或腸胃不適而啃咬植物。以下植物無毒且帶有淡淡香氣：',
     groups: [
       {
@@ -97,6 +102,7 @@ const pets = [
     name: '鸚鵡',
     en: 'Parrots',
     emoji: '🦜',
+    photo: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?auto=format&fit=crop&w=320&q=70',
     intro:
       '鳥類的呼吸道與消化道非常敏感，天生喜歡啃咬樹枝與葉片來磨喙。種植給鸚鵡的植物，絕對不能使用任何農藥或化學肥料：',
     groups: [
@@ -131,6 +137,7 @@ const pets = [
     name: '兔子',
     en: 'Rabbits',
     emoji: '🐰',
+    photo: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=320&q=70',
     intro: '兔子是草食性動物，種植的花草很多時候會直接變成牠們的「零食」或「下午茶」：',
     groups: [
       {
@@ -164,6 +171,7 @@ const pets = [
     name: '寵物鼠',
     en: 'Rats / Hamsters / Guinea Pigs',
     emoji: '🐹',
+    photo: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=320&q=70',
     intro: '小型囓齒類動物喜歡躲藏與咀嚼，可以種一些小巧且無毒的植物讓牠們偶爾加菜：',
     groups: [
       {
@@ -223,7 +231,15 @@ const active = computed(() => pets.find((p) => p.key === activeKey.value))
       <!-- 當前寵物 -->
       <section v-if="active" class="panel">
         <div class="panel__intro">
-          <span class="pet-badge">{{ active.emoji }}</span>
+          <span class="pet-badge">
+            <img
+              v-if="active.photo && !imgFailed[active.key]"
+              :src="active.photo"
+              :alt="active.name"
+              @error="imgFailed[active.key] = true"
+            />
+            <span v-else>{{ active.emoji }}</span>
+          </span>
           <div>
             <h2>{{ active.name }}<small>{{ active.en }}</small></h2>
             <p>{{ active.intro }}</p>
@@ -332,15 +348,22 @@ const active = computed(() => pets.find((p) => p.key === activeKey.value))
 }
 .pet-badge {
   flex: 0 0 auto;
-  width: 84px;
-  height: 84px;
+  width: 92px;
+  height: 92px;
   border-radius: 50%;
   background: #eef3ea;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.8rem;
-  box-shadow: inset 0 0 0 3px rgba(156, 175, 148, 0.4);
+  overflow: hidden;
+  box-shadow: 0 0 0 3px rgba(156, 175, 148, 0.45);
+}
+.pet-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .panel__intro h2 {
   margin: 0 0 0.4rem;
