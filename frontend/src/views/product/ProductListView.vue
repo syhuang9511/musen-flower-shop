@@ -3,20 +3,27 @@ import { computed, onMounted, ref } from 'vue'
 import { productApi } from '@/api/modules'
 import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
-import { useProductAdminStore } from '@/stores/productAdmin'
 import { useCategoryStore } from '@/stores/category'
 import { useBannerAdminStore } from '@/stores/bannerAdmin'
 import BannerCarousel from '@/components/ui/BannerCarousel.vue'
+import { STATIC_PRODUCTS } from '@/data/staticProducts'
 
 const products = ref([])
 const cart = useCartStore()
 const wishlist = useWishlistStore()
-const catalog = useProductAdminStore()
 const categoryStore = useCategoryStore()
 const banners = useBannerAdminStore()
 
 const activeCategory = ref('全部')
-const tabs = computed(() => ['全部', ...categoryStore.categories])
+
+const allCategories = computed(() => {
+  const fromProducts = [...new Set(products.value.map((p) => p.category).filter(Boolean))]
+  const base = categoryStore.categories
+  const merged = [...new Set([...base, ...fromProducts])]
+  return merged.filter((c) => products.value.some((p) => p.category === c))
+})
+
+const tabs = computed(() => ['全部', ...allCategories.value])
 
 const filtered = computed(() =>
   activeCategory.value === '全部'
@@ -32,10 +39,11 @@ function countOf(cat) {
 
 onMounted(async () => {
   try {
-    products.value = await productApi.list()
-  } catch (e) {
-    console.warn('改用本機目錄商品：', e.message)
-    products.value = catalog.activeProducts
+    const res = await productApi.list()
+    const list = res?.data ?? res
+    products.value = Array.isArray(list) && list.length ? list : STATIC_PRODUCTS
+  } catch {
+    products.value = STATIC_PRODUCTS
   }
 })
 </script>

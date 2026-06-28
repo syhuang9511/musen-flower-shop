@@ -7,7 +7,7 @@ import { ref, watch } from 'vue'
  */
 const STORE_KEY = 'floral_product_categories'
 
-export const DEFAULT_CATEGORIES = ['多肉植物', '觀葉植物', '鮮花花束', '盆器資材', '祝賀花禮']
+export const DEFAULT_CATEGORIES = ['多肉植物', '觀葉植物', '鮮花花束', '盆器資材', '祝賀花禮', '植栽書籍']
 
 export const useCategoryStore = defineStore('category', () => {
   const categories = ref(load())

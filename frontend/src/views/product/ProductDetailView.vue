@@ -3,14 +3,13 @@ import { computed, onMounted, ref } from 'vue'
 import { productApi } from '@/api/modules'
 import { useCartStore, shippingInfoFor } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
-import { useProductAdminStore } from '@/stores/productAdmin'
+import { STATIC_PRODUCTS } from '@/data/staticProducts'
 
 const props = defineProps({ id: { type: String, required: true } })
 const product = ref(null)
 const qty = ref(1)
 const cart = useCartStore()
 const wishlist = useWishlistStore()
-const catalog = useProductAdminStore()
 
 function changeQty(delta) {
   qty.value = Math.max(1, qty.value + delta)
@@ -20,10 +19,10 @@ const shipping = computed(() => (product.value ? shippingInfoFor(product.value.l
 
 onMounted(async () => {
   try {
-    product.value = await productApi.detail(props.id)
-  } catch (e) {
-    console.warn('改用本機目錄商品：', e.message)
-    product.value = catalog.findById(props.id)
+    const res = await productApi.detail(props.id)
+    product.value = res?.data ?? res ?? null
+  } catch {
+    product.value = STATIC_PRODUCTS.find((p) => p.id === Number(props.id)) ?? null
   }
 })
 </script>
