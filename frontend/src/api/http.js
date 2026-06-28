@@ -7,7 +7,7 @@ import axios from 'axios'
  */
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 15000,
+  timeout: 2500,
   withCredentials: true, // 帶 cookie，配合後端 CSRF
 })
 

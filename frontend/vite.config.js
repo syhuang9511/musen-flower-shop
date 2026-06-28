@@ -16,9 +16,12 @@ export default defineConfig(({ command }) => ({
     port: 5173,
     proxy: {
       // 開發時將 /api 代理到 Spring Boot 後端，避免 CORS
+      // 強制 IPv4（127.0.0.1），避免 Windows 先試 IPv6 拖慢失敗速度
       '/api': {
-        target: 'http://localhost:8081',
+        target: 'http://127.0.0.1:8081',
         changeOrigin: true,
+        timeout: 2000,
+        proxyTimeout: 2000,
       },
     },
   },

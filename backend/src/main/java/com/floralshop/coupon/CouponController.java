@@ -1,6 +1,8 @@
 package com.floralshop.coupon;
 
+import com.floralshop.auth.AuthPrincipal;
 import com.floralshop.common.ApiResponse;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -16,10 +18,9 @@ public class CouponController {
     }
 
     @PostMapping("/validate")
-    public ApiResponse<CouponService.ValidationResult> validate(@RequestBody ValidateRequest request) {
-        // TODO: 從 SecurityContext 取得登入會員 id（此處先傳 null 以示意）
-        Long memberId = null;
-        return ApiResponse.ok(couponService.validate(request.code(), request.subtotal(), memberId));
+    public ApiResponse<CouponService.ValidationResult> validate(@AuthenticationPrincipal AuthPrincipal principal,
+                                                                  @RequestBody ValidateRequest request) {
+        return ApiResponse.ok(couponService.validate(request.code(), request.subtotal(), principal.id()));
     }
 
     public record ValidateRequest(String code, BigDecimal subtotal) {

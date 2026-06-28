@@ -61,8 +61,18 @@ public class AdminProductController {
         return ApiResponse.ok(null);
     }
 
+    /** 切換主打狀態 */
+    @PatchMapping("/{id}/featured")
+    public ApiResponse<Product> toggleFeatured(@PathVariable Long id, @RequestParam boolean featured) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new BusinessException(40400, "商品不存在"));
+        product.setFeatured(featured);
+        return ApiResponse.ok(repository.save(product));
+    }
+
     private void apply(Product product, ProductUpsertRequest req) {
         product.setName(req.name());
+        if (req.category() != null) product.setCategory(req.category());
         product.setDescription(req.description());
         product.setPrice(req.price());
         product.setImage(req.image());

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 /** 後台新增 / 編輯商品的輸入。 */
 public record ProductUpsertRequest(
         @NotBlank String name,
+        String category,
         String description,
         @NotNull @DecimalMin("0") BigDecimal price,
         String image,

@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+import { RouterLink } from 'vue-router'
+</script>
 
 <template>
   <footer class="footer">
@@ -6,6 +8,11 @@
       <div>
         <strong class="footer__brand">沐森植研所</strong>
         <p>MUSEN ㅤ以植物為語，沉澱日常</p>
+      </div>
+      <div class="footer__links">
+        <RouterLink to="/return-policy">退換貨政策</RouterLink>
+        <RouterLink to="/service">客戶服務</RouterLink>
+        <RouterLink to="/contact">聯絡我們</RouterLink>
       </div>
       <div class="footer__social">
         <a href="#" target="_blank" rel="noopener">LINE 官方帳號</a>
@@ -33,6 +40,20 @@
 .footer__brand {
   font-size: 1.2rem;
   letter-spacing: 0.18em;
+}
+.footer__links {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+.footer__links a {
+  color: #d6dcd2;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+.footer__links a:hover {
+  color: var(--color-accent);
 }
 .footer__social {
   display: flex;

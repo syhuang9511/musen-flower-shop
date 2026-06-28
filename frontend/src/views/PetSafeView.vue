@@ -5,11 +5,6 @@ import BannerCarousel from '@/components/ui/BannerCarousel.vue'
 const imgFailed = reactive({})
 const photoIdx = ref(0)
 
-watch(
-  () => photoIdx.value,
-  () => {},
-)
-
 const slides = [
   {
     id: 1,

@@ -28,15 +28,18 @@ public class AuthController {
     private final OAuthService oAuthService;
     private final EmailVerificationService emailVerificationService;
     private final MemberRepository memberRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public AuthController(AuthService authService,
                           OAuthService oAuthService,
                           EmailVerificationService emailVerificationService,
-                          MemberRepository memberRepository) {
+                          MemberRepository memberRepository,
+                          org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
         this.authService = authService;
         this.oAuthService = oAuthService;
         this.emailVerificationService = emailVerificationService;
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /** 當前登入會員 */
@@ -89,4 +92,5 @@ public class AuthController {
     public ApiResponse<Void> logout() {
         return ApiResponse.ok(null);
     }
+
 }

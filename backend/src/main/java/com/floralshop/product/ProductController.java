@@ -17,8 +17,11 @@ public class ProductController {
     }
 
     @GetMapping
-    public ApiResponse<List<Product>> list() {
-        return ApiResponse.ok(repository.findByActiveTrue());
+    public ApiResponse<List<Product>> list(@RequestParam(required = false) String category) {
+        List<Product> products = category != null && !category.isBlank()
+                ? repository.findByActiveTrueAndCategory(category)
+                : repository.findByActiveTrue();
+        return ApiResponse.ok(products);
     }
 
     @GetMapping("/featured")

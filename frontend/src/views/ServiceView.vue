@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
 
 // 包裝示意圖（品牌插圖）。若日後要換成實拍照片，存成 frontend/public/packaging.jpg
 // 並把下面的 .svg 改為 .jpg 即可。
@@ -48,7 +49,11 @@ function onImgError() {
       </ul>
 
       <h2>退換貨政策</h2>
-      <p>鮮花類因屬易逝商品，恕不適用七天鑑賞期；一般資材依消保法辦理。</p>
+      <p>
+        鮮花類因屬易逝商品，恕不適用七天鑑賞期；一般資材依消保法辦理。
+        詳細條款請參閱
+        <RouterLink to="/return-policy">退換貨政策頁面</RouterLink>。
+      </p>
     </section>
   </div>
 </template>

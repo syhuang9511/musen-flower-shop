@@ -14,7 +14,7 @@ const SEED = [
     image: 'https://images.unsplash.com/photo-1487070183336-b863922373d4?auto=format&fit=crop&w=1600&q=70',
     title: '母親節限定花禮',
     subtitle: '康乃馨 × 當季鮮花，即日起滿 NT$1,000 折 100（WELCOME100）',
-    link: '/products',
+    link: '/events',
     active: true,
   },
   {
@@ -22,7 +22,7 @@ const SEED = [
     image: 'https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&w=1600&q=70',
     title: '觀葉植栽特展',
     subtitle: '把森林帶回家，精選大型落地植栽・雙北專人配送',
-    link: '/products',
+    link: '/events',
     active: true,
   },
   {

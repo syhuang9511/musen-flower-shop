@@ -31,8 +31,10 @@ const routes = [
     props: true,
   },
   { path: '/pet-safe', name: 'pet-safe', component: () => import('@/views/PetSafeView.vue') },
+  { path: '/events', name: 'events', component: () => import('@/views/EventsView.vue') },
   { path: '/contact', name: 'contact', component: () => import('@/views/ContactView.vue') },
   { path: '/service', name: 'service', component: () => import('@/views/ServiceView.vue') },
+  { path: '/return-policy', name: 'return-policy', component: () => import('@/views/ReturnPolicyView.vue') },
 
   // ---- 會員 ----
   { path: '/login', name: 'login', component: () => import('@/views/auth/LoginView.vue') },
